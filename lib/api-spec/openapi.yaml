@@ -1,0 +1,608 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Civic Co-Pilot API - Civic Grievance and Scheme Recommendation System
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: complaints
+    description: Complaint submission and tracking
+  - name: schemes
+    description: Scheme recommendation
+  - name: admin
+    description: Admin management
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: loginUser
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logoutUser
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get current logged-in user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /complaints:
+    get:
+      operationId: listComplaints
+      tags: [complaints]
+      summary: List complaints for the current user (or all for admin)
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [SUBMITTED, IN_PROGRESS, RESOLVED, REJECTED]
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of complaints
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Complaint"
+
+    post:
+      operationId: submitComplaint
+      tags: [complaints]
+      summary: Submit a new complaint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitComplaintRequest"
+      responses:
+        "201":
+          description: Complaint submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /complaints/{id}:
+    get:
+      operationId: getComplaint
+      tags: [complaints]
+      summary: Get a specific complaint by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Complaint details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ComplaintDetail"
+        "404":
+          description: Complaint not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /complaints/{id}/status:
+    patch:
+      operationId: updateComplaintStatus
+      tags: [complaints]
+      summary: Update complaint status (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateStatusRequest"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /schemes:
+    get:
+      operationId: listSchemes
+      tags: [schemes]
+      summary: List all available schemes
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [STUDENT, CITIZEN]
+      responses:
+        "200":
+          description: List of schemes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Scheme"
+
+  /schemes/recommend:
+    post:
+      operationId: recommendSchemes
+      tags: [schemes]
+      summary: Get personalized scheme recommendations based on user profile and complaint text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecommendRequest"
+      responses:
+        "200":
+          description: Recommended schemes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommendResponse"
+
+  /admin/complaints:
+    get:
+      operationId: adminListComplaints
+      tags: [admin]
+      summary: Admin - list all complaints with filters
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [SUBMITTED, IN_PROGRESS, RESOLVED, REJECTED]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [LOW, MEDIUM, HIGH, URGENT]
+        - name: department
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: All complaints
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Complaint"
+
+  /admin/stats:
+    get:
+      operationId: adminGetStats
+      tags: [admin]
+      summary: Admin - get dashboard statistics
+      responses:
+        "200":
+          description: Statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        role:
+          type: string
+          enum: [STUDENT, CITIZEN, ADMIN]
+      required:
+        - name
+        - email
+        - password
+        - role
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        message:
+          type: string
+      required:
+        - user
+        - message
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [STUDENT, CITIZEN, ADMIN]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - email
+        - role
+        - createdAt
+
+    SubmitComplaintRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+      required:
+        - title
+        - description
+
+    Complaint:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [FINANCE, INFRASTRUCTURE, EDUCATION, HEALTH, GENERAL, HOUSING, EMPLOYMENT, ENVIRONMENT]
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, URGENT]
+        department:
+          type: string
+        status:
+          type: string
+          enum: [SUBMITTED, IN_PROGRESS, RESOLVED, REJECTED]
+        userId:
+          type: integer
+        userName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - description
+        - category
+        - priority
+        - department
+        - status
+        - userId
+        - createdAt
+        - updatedAt
+
+    StatusHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        complaintId:
+          type: integer
+        status:
+          type: string
+          enum: [SUBMITTED, IN_PROGRESS, RESOLVED, REJECTED]
+        note:
+          type: string
+        changedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - complaintId
+        - status
+        - changedAt
+
+    ComplaintDetail:
+      allOf:
+        - $ref: "#/components/schemas/Complaint"
+        - type: object
+          properties:
+            statusHistory:
+              type: array
+              items:
+                $ref: "#/components/schemas/StatusHistory"
+            recommendedSchemes:
+              type: array
+              items:
+                $ref: "#/components/schemas/Scheme"
+          required:
+            - statusHistory
+            - recommendedSchemes
+
+    UpdateStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [SUBMITTED, IN_PROGRESS, RESOLVED, REJECTED]
+        note:
+          type: string
+      required:
+        - status
+
+    Scheme:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        eligibleRoles:
+          type: array
+          items:
+            type: string
+        benefits:
+          type: string
+        howToApply:
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - category
+        - eligibleRoles
+        - benefits
+        - howToApply
+
+    RecommendRequest:
+      type: object
+      properties:
+        complaintText:
+          type: string
+        userRole:
+          type: string
+          enum: [STUDENT, CITIZEN, ADMIN]
+      required:
+        - complaintText
+        - userRole
+
+    RecommendResponse:
+      type: object
+      properties:
+        category:
+          type: string
+        schemes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Scheme"
+      required:
+        - category
+        - schemes
+
+    AdminStats:
+      type: object
+      properties:
+        totalComplaints:
+          type: integer
+        byStatus:
+          type: object
+          properties:
+            SUBMITTED:
+              type: integer
+            IN_PROGRESS:
+              type: integer
+            RESOLVED:
+              type: integer
+            REJECTED:
+              type: integer
+          required:
+            - SUBMITTED
+            - IN_PROGRESS
+            - RESOLVED
+            - REJECTED
+        byCategory:
+          type: object
+          additionalProperties:
+            type: integer
+        byPriority:
+          type: object
+          properties:
+            LOW:
+              type: integer
+            MEDIUM:
+              type: integer
+            HIGH:
+              type: integer
+            URGENT:
+              type: integer
+          required:
+            - LOW
+            - MEDIUM
+            - HIGH
+            - URGENT
+        totalUsers:
+          type: integer
+        resolvedToday:
+          type: integer
+      required:
+        - totalComplaints
+        - byStatus
+        - byCategory
+        - byPriority
+        - totalUsers
+        - resolvedToday

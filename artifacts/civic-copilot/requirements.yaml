@@ -1,0 +1,19 @@
+packages:
+  "framer-motion": "For page transitions and component micro-interactions"
+  "recharts": "For the admin dashboard analytics charts"
+  "date-fns": "For formatting complaint timestamps cleanly"
+  "@hookform/resolvers": "For Zod form validation"
+  "react-hook-form": "For robust form state management"
+  "zod": "For defining and validating form schemas"
+
+images:
+  - path: "artifacts/civic-copilot/public/images/hero-bg.png"
+    description: "Abstract geometric waves in deep trust-worthy blues and soft whites, modern government tech aesthetic, subtle depth, high quality 3D render"
+    aspect_ratio: "16:9"
+  - path: "artifacts/civic-copilot/public/images/logo.png"
+    description: "Minimalist modern civic emblem, stylized building with a leaf or subtle human element, monochrome deep blue on transparent background, flat design"
+    aspect_ratio: "1:1"
+
+notes:
+  - Assumes standard cookie-based authentication with 'credentials: include' for all API calls
+  - Hook imports assume the generated API client is at @workspace/api-client-react
