@@ -19,16 +19,16 @@ Civic Co-Pilot is a full-stack web application that streamlines grievance handli
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18, Vite, TypeScript, Tailwind CSS |
-| UI Components | shadcn/ui, Radix UI |
-| Backend | Node.js, Express 5, TypeScript |
-| Database | PostgreSQL, Drizzle ORM |
-| API Contract | OpenAPI 3.1, Orval (codegen) |
-| Forms | React Hook Form, Zod |
-| Charts | Recharts |
-| Build Tool | pnpm workspaces (monorepo), esbuild |
+| Layer         | Technology                               |
+| ------------- | ---------------------------------------- |
+| Frontend      | React 18, Vite, TypeScript, Tailwind CSS |
+| UI Components | shadcn/ui, Radix UI                      |
+| Backend       | Node.js, Express 5, TypeScript           |
+| Database      | PostgreSQL, Drizzle ORM                  |
+| API Contract  | OpenAPI 3.1, Orval (codegen)             |
+| Forms         | React Hook Form, Zod                     |
+| Charts        | Recharts                                 |
+| Build Tool    | pnpm workspaces (monorepo), esbuild      |
 
 ---
 
@@ -86,6 +86,11 @@ cd Civic-Co-Pilot
 # Install dependencies
 pnpm install
 
+#if you don't have pnpm
+npm install -g pnpm@latest-10
+#then try
+pnpm install
+
 # Set environment variables
 # Create a .env file or export directly:
 export DATABASE_URL=postgresql://user:password@localhost:5432/civic_copilot
@@ -122,20 +127,20 @@ pnpm --filter @workspace/api-spec run codegen
 
 ## API Endpoints
 
-| Method | Path | Description |
-|---|---|---|
-| `POST` | `/api/auth/register` | Register a new user |
-| `POST` | `/api/auth/login` | Login |
-| `POST` | `/api/auth/logout` | Logout |
-| `GET` | `/api/auth/me` | Get current user |
-| `GET` | `/api/complaints` | List complaints (own / all for admin) |
-| `POST` | `/api/complaints` | Submit a new complaint |
-| `GET` | `/api/complaints/:id` | Get complaint details + status history |
-| `PATCH` | `/api/complaints/:id/status` | Update complaint status (admin only) |
-| `GET` | `/api/schemes` | List all schemes |
-| `POST` | `/api/schemes/recommend` | Get personalized scheme recommendations |
-| `GET` | `/api/admin/complaints` | Admin: list all complaints with filters |
-| `GET` | `/api/admin/stats` | Admin: dashboard statistics |
+| Method  | Path                         | Description                             |
+| ------- | ---------------------------- | --------------------------------------- |
+| `POST`  | `/api/auth/register`         | Register a new user                     |
+| `POST`  | `/api/auth/login`            | Login                                   |
+| `POST`  | `/api/auth/logout`           | Logout                                  |
+| `GET`   | `/api/auth/me`               | Get current user                        |
+| `GET`   | `/api/complaints`            | List complaints (own / all for admin)   |
+| `POST`  | `/api/complaints`            | Submit a new complaint                  |
+| `GET`   | `/api/complaints/:id`        | Get complaint details + status history  |
+| `PATCH` | `/api/complaints/:id/status` | Update complaint status (admin only)    |
+| `GET`   | `/api/schemes`               | List all schemes                        |
+| `POST`  | `/api/schemes/recommend`     | Get personalized scheme recommendations |
+| `GET`   | `/api/admin/complaints`      | Admin: list all complaints with filters |
+| `GET`   | `/api/admin/stats`           | Admin: dashboard statistics             |
 
 ---
 
@@ -145,24 +150,24 @@ When a complaint is submitted, the system analyzes the title and description usi
 
 **Category Detection**
 
-| Category | Example Keywords |
-|---|---|
-| FINANCE | fee, payment, scholarship, loan, refund |
-| EDUCATION | school, college, exam, teacher, admission |
-| HEALTH | hospital, doctor, medicine, vaccination |
+| Category       | Example Keywords                            |
+| -------------- | ------------------------------------------- |
+| FINANCE        | fee, payment, scholarship, loan, refund     |
+| EDUCATION      | school, college, exam, teacher, admission   |
+| HEALTH         | hospital, doctor, medicine, vaccination     |
 | INFRASTRUCTURE | road, pothole, electricity, water, drainage |
-| HOUSING | house, rent, eviction, accommodation |
-| EMPLOYMENT | job, salary, unemployment, labour |
-| ENVIRONMENT | pollution, waste, garbage, emission |
+| HOUSING        | house, rent, eviction, accommodation        |
+| EMPLOYMENT     | job, salary, unemployment, labour           |
+| ENVIRONMENT    | pollution, waste, garbage, emission         |
 
 **Priority Detection**
 
-| Priority | Example Keywords |
-|---|---|
-| URGENT | emergency, danger, life, crisis, flood |
-| HIGH | severe, broken, denied, no access |
-| MEDIUM | delay, pending, waiting, months |
-| LOW | (default) |
+| Priority | Example Keywords                       |
+| -------- | -------------------------------------- |
+| URGENT   | emergency, danger, life, crisis, flood |
+| HIGH     | severe, broken, denied, no access      |
+| MEDIUM   | delay, pending, waiting, months        |
+| LOW      | (default)                              |
 
 ---
 
@@ -179,9 +184,9 @@ schemes          — id, name, description, category, eligible_roles, benefits, 
 
 ## Demo Accounts
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | admin@civic.gov | admin123 |
+| Role    | Email               | Password |
+| ------- | ------------------- | -------- |
+| Admin   | admin@civic.gov     | admin123 |
 | Student | student@example.com | admin123 |
 | Citizen | citizen@example.com | admin123 |
 
@@ -189,32 +194,32 @@ schemes          — id, name, description, category, eligible_roles, benefits, 
 
 ## Pages
 
-| Page | Route | Access |
-|---|---|---|
-| Home / Landing | `/` | Public |
-| Register | `/register` | Public |
-| Login | `/login` | Public |
-| Dashboard | `/dashboard` | Authenticated |
-| Submit Complaint | `/submit` | Authenticated |
-| My Complaints | `/complaints` | Authenticated |
-| Complaint Detail | `/complaints/:id` | Authenticated |
-| Browse Schemes | `/schemes` | Authenticated |
-| Admin Dashboard | `/admin` | Admin only |
-| Admin Complaints | `/admin/complaints` | Admin only |
+| Page             | Route               | Access        |
+| ---------------- | ------------------- | ------------- |
+| Home / Landing   | `/`                 | Public        |
+| Register         | `/register`         | Public        |
+| Login            | `/login`            | Public        |
+| Dashboard        | `/dashboard`        | Authenticated |
+| Submit Complaint | `/submit`           | Authenticated |
+| My Complaints    | `/complaints`       | Authenticated |
+| Complaint Detail | `/complaints/:id`   | Authenticated |
+| Browse Schemes   | `/schemes`          | Authenticated |
+| Admin Dashboard  | `/admin`            | Admin only    |
+| Admin Complaints | `/admin/complaints` | Admin only    |
 
 ---
 
 ## Java Concepts Demonstrated (Equivalent in TypeScript/Node.js)
 
-| Java Concept | Implementation |
-|---|---|
-| OOP / Encapsulation | TypeScript classes and interfaces |
-| Collections & Streams | Array `.filter()`, `.map()`, `.reduce()` |
-| Exception Handling | Try/catch with structured error responses |
-| JDBC / JPA | Drizzle ORM with PostgreSQL |
-| REST API | Express 5 route handlers |
+| Java Concept            | Implementation                               |
+| ----------------------- | -------------------------------------------- |
+| OOP / Encapsulation     | TypeScript classes and interfaces            |
+| Collections & Streams   | Array `.filter()`, `.map()`, `.reduce()`     |
+| Exception Handling      | Try/catch with structured error responses    |
+| JDBC / JPA              | Drizzle ORM with PostgreSQL                  |
+| REST API                | Express 5 route handlers                     |
 | Rule-based Logic Engine | `classifier.ts` — keyword-matching functions |
-| Layered Architecture | Routes → Services → DB (Repository pattern) |
+| Layered Architecture    | Routes → Services → DB (Repository pattern)  |
 
 ---
 
